@@ -1,0 +1,12 @@
+name: order-sentences
+title: order-sentences
+username:
+account: pbaumgartner
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2002691
+bundleId: 2929000
+url: https://pbaumgartner.shinyapps.io/order-sentences/
+when: 1585253160.07491
+asMultiple: FALSE
+asStatic: FALSE

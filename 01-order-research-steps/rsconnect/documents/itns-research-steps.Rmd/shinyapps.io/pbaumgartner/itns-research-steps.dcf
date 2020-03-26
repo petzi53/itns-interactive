@@ -1,0 +1,12 @@
+name: itns-research-steps
+title: itns-research-steps
+username:
+account: pbaumgartner
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2002791
+bundleId: 2929090
+url: https://pbaumgartner.shinyapps.io/itns-research-steps/
+when: 1585254377.03015
+asMultiple: FALSE
+asStatic: FALSE
