@@ -35,14 +35,15 @@ shinyUI <- fluidPage(
 
              conditionalPanel(
                  'input.dataset === "Dot Plot"',
-                 checkboxInput("ragValue", label = "Rug (1-d plot)", value = FALSE)
+                 checkboxInput("ragValue", label = strong("Show individual observations"), value = FALSE)
              ), # conditionalPanel Dot Plot
 
              conditionalPanel(
                  'input.dataset === "Histogram"',
                  sliderInputUI("bins1", "Number of bins: Histogram 1", value = 5),
                  sliderInputUI("bins2", "Number of bins: Histogram 2", value = 14),
-                 checkboxInput("ragValue2", label = "Rug (1-d plot)", value = FALSE)
+                 hr(),
+                 checkboxInput("ragValue2", label = strong("Show individual observations"), value = FALSE)
              ), # conditionalPanel histogram
 
              conditionalPanel(
