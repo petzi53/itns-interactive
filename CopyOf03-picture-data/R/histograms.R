@@ -25,9 +25,9 @@ plotHist <- function(binsNr, binBorders, histoTitle) {
     if (input$ragValue2) {rugs = rugPlot
     } else {rugs = NULL}
         ggplot(data(), aes_string(paste0("`", colnames(data())[1], "`"))) +
-        geom_histogram(bins = binsNr, fill = myFillColor, color = myColor) +
-        theme_clean() +
-        scale_y_continuous(breaks = breaks_extended(8)) +
+        geom_histogram(bins = binsNr, fill = myFillColor, color = myBorderColor) +
+        ggthemes::theme_clean() +
+        scale_y_continuous(breaks = scales::breaks_extended(8)) +
         scale_x_continuous(sec.axis =
            sec_axis(trans = ~., breaks = binBorders,
                     guide_axis(title = "Bin Boundaries"))) +

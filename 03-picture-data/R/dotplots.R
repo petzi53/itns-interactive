@@ -2,10 +2,10 @@
 
 # factor out the same parts for both variants
 myDotPlot <-
-    reactive(ggplot(data(), aes(x = data()[[1]])) +
+    isolate(ggplot(data(), aes(x = `Transcription%`)) +
 #    theme_clean() +
     my_theme +
-    scale_x_continuous("X (Transcription %)", breaks = seq(0, max(data()[[1]] + 1), 1)) +
+    scale_x_continuous("X (Transcription in %)", breaks = seq(0, max(data()[[1]] + 1), 1)) +
     scale_y_continuous(NULL, breaks = NULL))
 #
 rugPlot <- geom_rug(color = "red",
@@ -15,7 +15,7 @@ rugPlot <- geom_rug(color = "red",
 
 # Generate a simple dotplot with rugs of the data ----
 simpleDotPlot <-
-    reactive(myDotPlot() +
+    isolate(myDotPlot +
     labs(title = "Simple Dot Plot") +
     geom_dotplot(method = "dotdensity",
                  binwidth = 0.1, # or 1 for stacked dot plot
@@ -28,7 +28,7 @@ simpleDotPlot <-
 
 # Generate a stacked dotplot with rugs of the data ----
 stackedDotPlot <-
-    reactive(myDotPlot() +
+    isolate(myDotPlot +
     labs(title = "Stacked Dot Plot") +
     geom_dotplot(method = "dotdensity",
                  binwidth = 1, # or 0.1 for simple dot plot
@@ -39,13 +39,13 @@ stackedDotPlot <-
     ))
 
 re_stackedDotPlot <- reactive({
-    if (input$ragValue) { stackedDotPlot() + rugPlot }
-    else {stackedDotPlot() + NULL}
+    if (input$ragValue) { stackedDotPlot + rugPlot }
+    else {stackedDotPlot}
 })
 
 re_simpleDotPlot <- reactive({
-    if (input$ragValue) { simpleDotPlot() + rugPlot }
-    else {simpleDotPlot() + NULL}
+    if (input$ragValue) { simpleDotPlot + rugPlot }
+    else {simpleDotPlot}
 })
 
 
@@ -72,3 +72,4 @@ re_plots <- reactive({
 output$twoDotPlots <- renderPlot({
     re_plots()
 })
+

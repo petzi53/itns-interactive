@@ -39,6 +39,11 @@ shinyUI <- fluidPage(
              ), # conditionalPanel Dot Plot
 
              conditionalPanel(
+                 'input.dataset === "Dot Plot 2"',
+                 verbatimTextOutput("clickInfo2"),
+             ), # conditionalPanel Dot Plot
+
+             conditionalPanel(
                  'input.dataset === "Histogram"',
                  sliderInputUI("bins1", "Number of bins: Histogram 1", value = 5),
                  sliderInputUI("bins2", "Number of bins: Histogram 2", value = 14),
@@ -64,19 +69,27 @@ shinyUI <- fluidPage(
         ), # sidebarPanel
 
         mainPanel(width = 8,
-              tabsetPanel(type = "tabs", selected = "Histogram",
+              tabsetPanel(type = "tabs", selected = "Dot Plot 2",
                           id = 'dataset',
 
                   tabPanel("Data",
                            fluidRow(br(),
                                     column(5, DTOutput("myDT")),
                            ) # fluidRow
-                  ), # tabPanel Data
+                    ), # tabPanel Data
 
                   tabPanel("Dot Plot",
                            br(),
-                           plotOutput("twoDotPlots")
+                           plotOutput("twoDotPlots", height = 550)
                     ), # tabPanel Dot Plot
+
+                  tabPanel("Dot Plot 2",
+                           br(),
+                           plotOutput("dotPlot2", height = 200,
+                                      click = clickOpts(id = "dotPlot2Click")),
+                           br(), br(),
+                           plotOutput("dotPlot3", height = 300),
+                    ), # tabPanel Dot Plot 2
 
                   tabPanel("Histogram",
                            br(),
