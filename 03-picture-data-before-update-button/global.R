@@ -26,7 +26,6 @@ myBorderColor = "black"
 
 df <- read_csv("Describe_Laptop.csv")
 dataOrig <- df
-dataModified <- df
 
 # df <-
 #   gsheet2tbl(

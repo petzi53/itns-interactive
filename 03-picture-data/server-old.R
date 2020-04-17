@@ -3,7 +3,6 @@
 shinyServer(function(input, output, session) {
 
     data <- reactiveVal(df)
-    reVal <-  reactiveValues()
 
     myData <- reactive({
         datatable(
@@ -32,86 +31,68 @@ shinyServer(function(input, output, session) {
         length(data()[[1]])
     })
 
-    observeEvent(reVal$info, {
-
+    observeEvent(input$histPlotDT_cell_edit, {
         t <- data()
-        info <- reVal$info
-
+        info <- input$histPlotDT_cell_edit
         # info$value is always character. Has to be converted to numeric
         # check if string can be converted to numeric
-        if (suppressWarnings(is.na(as.numeric(info()$value)))) {
+        if (suppressWarnings(is.na(as.numeric(info$value)))) {
             session$sendCustomMessage(type = 'myMessage',
-                          message = list(paste("'", info()$value,
+                          message = list(paste("'", info$value,
                           "'= wrong data type.",
                           "Only numeric values allowed.")))
 
             # replace with previous value
             # even if row is integer is "as.numeric" necessary
             # otherwise it would also replace variable name
-            tableValue <- as.numeric(data()[info()$row, ])
+            info$value <- as.numeric(data()[info$row, ])
             } else {
 
             # yes, it can be converted: then do it!
-            tableValue <- as.numeric(info()$value)
-            }
+            info$value <- as.numeric(info$value)
+        }
 
         # only input between 0 and 6 * sd is allowed
         maxData = round(sd(data()[[1]]) * 6, 0)
-        if (tableValue <= 0 ||
-            tableValue > maxData) {
+        if (info$value <= 0 ||
+            info$value > maxData) {
             session$sendCustomMessage(type = 'myMessage',
-              message = list(paste("'", tableValue,
+              message = list(paste("'", info$value,
                                    "' = outside of possible range for this dataset.",
                                    " Values only between 0 and ",
                                    maxData, " allowed.")))
 
             # replace with previous value
-            tableValue <- as.numeric(data()[info()$row, ]) # just the value, see above
+            info$value <- as.numeric(data()[info$row, ]) # just the value, see above
         }
 
         t <- data()
-        t[info()$row, info()$col] <- as.numeric(tableValue)
+        t[info$row, info$col] <- as.numeric(info$value)
         data(t)
-        if (reVal$table == "Histogram") {
-            output$histPlotDT = renderDT(myData())
-        } else {
-            output$dotPlotDT = renderDT(myData())
-        }
-    })
-
-    observeEvent(input$histPlotDT_cell_edit, {
-        reVal$info <- reactive(input$histPlotDT_cell_edit)
-        reVal$table <- "Histogram"
-    })
-
-    observeEvent(input$dotPlotDT_cell_edit, {
-        reVal$info <- reactive(input$dotPlotDT_cell_edit)
-        reVal$table <- "Dot Plot"
-    })
-
-    observeEvent(input$dataset, {
-        if (isolate(input$dataset) == "Histogram") {
-            reVal$rows_selected <- reactive(input$histPlotDT_rows_selected)
-        }
-        if (isolate(input$dataset) == "Dot Plot") {
-            reVal$rows_selected <- reactive(input$dotPlotDT_rows_selected)
-        }
+        output$histPlotDTDT = renderDT(myData())
     })
 
     observeEvent(input$delete, {
-        if (is.null(reVal$rows_selected())) {
+        if (input$id == 'Histogram') {
+            isolate(tableDT  <-  input$histoPlotDT_rows_selected)
+        }
+        if (input$id == 'Dot Plot') {
+            isolate(tableDT = input$dotPlotDT_rows_selected)
+        }
+
+        if (is.null(tableDT)) {
             session$sendCustomMessage(type = 'myMessage',
               message = "Select row you want to delete.")
         } else {
-
-            data(data()[-(reVal$rows_selected()), , drop = FALSE])
-#            dataModified <<- data()[-(re()), , drop = FALSE]
+            data(data()[-tableDT, , drop = FALSE])
         }
     })
+
 
     observeEvent(input$add, {
         t <- rbind(median(data()[[1]]), data())
         data(t)
+        output$myDT = renderDT(myData())
     })
 
     observeEvent(input$reset, {
