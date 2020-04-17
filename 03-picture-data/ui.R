@@ -1,4 +1,4 @@
-# itns-03 PICTURE DATA 2020-04-13
+# itns-03 PICTURE DATA 2020-04-17
 
 myPanelText = "Frequency histogram of verbatim transcription data in percent,
                  for the laptop group, with N = "
@@ -35,7 +35,8 @@ shinyUI <- fluidPage(
 
              conditionalPanel(
                  'input.dataset === "Dot Plot"',
-                 checkboxInput("ragValue", label = strong("Show individual observations"), value = FALSE)
+                 checkboxInput("ragValue",
+                               label = strong("Show individual observations"), value = FALSE)
              ), # conditionalPanel Dot Plot
 
              conditionalPanel(
@@ -43,7 +44,8 @@ shinyUI <- fluidPage(
                  sliderInputUI("bins1", "Number of bins: Histogram 1", value = 5),
                  sliderInputUI("bins2", "Number of bins: Histogram 2", value = 14),
                  hr(),
-                 checkboxInput("ragValue2", label = strong("Show individual observations"), value = FALSE)
+                 checkboxInput("ragValue2",
+                               label = strong("Show individual observations"), value = FALSE)
              ), # conditionalPanel histogram
 
              conditionalPanel(
@@ -75,8 +77,9 @@ shinyUI <- fluidPage(
                   ), # tabPanel Data
 
                   tabPanel("Dot Plot",
-                           br(),
-                           plotOutput("twoDotPlots")
+                           plotOutput("dotPlotSimple", height = 200),
+                           br(), br(),
+                           plotOutput("dotPlotStacked", height = 300),
                     ), # tabPanel Dot Plot
 
                   tabPanel("Histogram",

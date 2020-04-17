@@ -85,8 +85,8 @@ shinyUI <- fluidPage(
 
                   tabPanel("Dot Plot 2",
                            br(),
-                           plotOutput("dotPlot2", height = 200,
-                                      click = clickOpts(id = "dotPlot2Click")),
+                           plotOutput("dotPlot2", height = 200),
+#                                      click = clickOpts(id = "dotPlot2Click")),
                            br(), br(),
                            plotOutput("dotPlot3", height = 300),
                     ), # tabPanel Dot Plot 2
