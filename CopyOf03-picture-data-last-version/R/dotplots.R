@@ -11,11 +11,11 @@ myDotPlot <-  function(dp) {
     # (different distance between simple and stacked dot plot)
     if (input$ragValue) {rugs = rugPlot} else {rugs = NULL}
 
-    ggplot(data$real,
-        aes_string(paste0("`", colnames(data$real)[1], "`"))) +
+    ggplot(data(),
+        aes_string(paste0("`", colnames(data())[1], "`"))) +
         ggthemes::theme_clean() +
-        scale_x_continuous(paste0("X (", colnames(data$real)[1], ")"),
-           breaks = seq(0, max(data$real[[1]] + 1), 1)) +
+        scale_x_continuous(paste0("X (", colnames(data())[1], ")"),
+           breaks = seq(0, max(data()[[1]] + 1), 1)) +
         scale_y_continuous(
            expand = expansion(add = c(dp()$distance, 0)),
                     NULL, breaks = NULL) +
@@ -49,11 +49,11 @@ rugPlot <- geom_rug(color = "red",
                     sides = "b",
                     length = unit(5, "mm"))
 
-# output$dotPlotSimple <- renderPlot({
-#     myDotPlot(myDotPlotSimple)
-# })
-#
-# output$dotPlotStacked <- renderPlot({
-#     myDotPlot(myDotPlotStacked)
-# })
+output$dotPlotSimple <- renderPlot({
+    myDotPlot(myDotPlotSimple)
+})
+
+output$dotPlotStacked <- renderPlot({
+    myDotPlot(myDotPlotStacked)
+})
 

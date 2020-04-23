@@ -9,12 +9,13 @@ library(DT)
 # first time use packages
 library(scales)
 library(ggthemes)
+library(glue)
+library(shinyjs)
 
 
-# library(shinyjs)
+
 # library(reactlog)
 # library(gsheet)
-# library(glue)
 # library(itns)
 
 # options(shiny.reactlog = TRUE)

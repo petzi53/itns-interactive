@@ -3,7 +3,7 @@
 # Generate histograms with different bins and second axis with bin boundaries ----
 
 binsBoundary <-  function(binsNr) {
-    bins <- round(seq(min(data$real[[1]]), max(data$real[[1]]), length.out = binsNr - 1), 2)
+    bins <- round(seq(min(data()[[1]]), max(data()[[1]]), length.out = binsNr - 1), 2)
     binRange <- range(bins)
     binMargin <- round(((binRange[2] - binRange[1]) / (binsNr - 1)), 2)
     binStart <- 0 - (binMargin / 2)
@@ -13,9 +13,9 @@ binsBoundary <-  function(binsNr) {
 
 plotHist <- function(binsNr, binBorders, histoTitle) {
 
-    if (input$ragValue) {rugs = rugPlot
+    if (input$ragValue2) {rugs = rugPlot
     } else {rugs = NULL}
-        ggplot(data$real, aes_string(paste0("`", colnames(data$real)[1], "`"))) +
+        ggplot(data(), aes_string(paste0("`", colnames(data())[1], "`"))) +
         geom_histogram(bins = binsNr, fill = myFillColor, color = myBorderColor) +
         ggthemes::theme_clean() +
         scale_y_continuous(expand = expansion(mult = 0.1),
@@ -24,7 +24,7 @@ plotHist <- function(binsNr, binBorders, histoTitle) {
                            sec_axis(trans = ~., breaks = binBorders,
                                     guide_axis(title = "Bin Boundaries"))) +
         ggtitle(histoTitle) +
-        labs(x = paste0("X (", colnames(data$real)[1], ")"), y = "Frequency") +
+        labs(x = paste0("X (", colnames(data())[1], ")"), y = "Frequency") +
         rugs
 }
 

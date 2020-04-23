@@ -90,13 +90,18 @@ shinyServer(function(input, output, session) {
     })
 
     observeEvent(input$dataset, {
-        if (isolate(input$dataset) == "Histogram") {
+        if (input$dataset == "Histogram") {
             reVal$rows_selected <- reactive(input$histPlotDT_rows_selected)
         }
-        if (isolate(input$dataset) == "Dot Plot") {
+        if (input$dataset == "Dot Plot") {
             reVal$rows_selected <- reactive(input$dotPlotDT_rows_selected)
         }
     })
+
+    updatePlots <- eventReactive(input$update, {
+        input$delete
+    })
+
 
     observeEvent(input$delete, {
         if (is.null(reVal$rows_selected())) {

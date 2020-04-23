@@ -1,105 +1,75 @@
-# itns-03 PICTURE DATA 2020-04-17
+# itns-03 PICTURE DATA 2020-04-20
 
-myPanelText = "Frequency histogram of verbatim transcription data in percent,
-                 for the laptop group, with N = "
-myPanelText1 = " from Study 1 of Mueller and Oppenheimer (2014)"
+myPanelText = glue::glue("Frequency histogram of verbatim transcription data in percent,
+                   for the laptop group, with N = ", {nrow(df)},
+                   " from Study 1 of Mueller and Oppenheimer (2014)")
 
-showObs = "Individual observations (rug 1-d plot)"
-
-
-sliderInputUI <- function(id, label="Number of bins:", min=5, max=20, value=9) {
-    sliderInput(
-        id,
-        label = label,
-        min = min,
-        max = max,
-        value = value
-    )
-}
-
+showObs = "Individual observations"
 
 
 shinyUI <- fluidPage(
 
+    shinyjs::useShinyjs(),
+    shinyFeedback::useShinyFeedback(),
     singleton(
         tags$head(tags$script(src = "message-handler.js"))
     ),
 
-    titlePanel("Picture Data"),
+    fluidRow(
+        column(2,
+           wellPanel(
+               HTML("<center><h2>Picture Data</h2></center>"),
+               HTML("<center><h4>(Control Panel)</h4></center>"),
+               hr(),
 
-    sidebarLayout(
-        sidebarPanel(width = 3,
-             helpText(myPanelText,
-                      textOutput("N", inline = TRUE),
-                      myPanelText1,
-                      hr(),
-                      ), # helpText
-             verbatimTextOutput("summary"),
-             hr(),
-             actionButton("add", "Add Row",
-                          class = "btn btn-primary",
-                          width = "100px"),
-             actionButton("delete", "Delete Row",
-                          class = "btn btn-primary",
-                          width = "100px"),
-             br(),br(),
-             actionButton("update", "Update",
-                          class = "btn btn-primary",
-                          width = "100px"),
-             actionButton("reset", "Reset",
-                          class = "btn btn-warning",
-                          width = "100px"),
-             hr(),
+               div(style = "text-align: center",
+                   "Show data as: ", br(),
+               actionButton("plotBtn", "Histogram", # but plot dot displayed
+                            class = "btn btn-success",
+                            width = "100px"),
+               hr(),
+               ), # end of button div
 
-             conditionalPanel(
-                 'input.dataset === "Dot Plot"',
-                 checkboxInput("ragValue",
-                               label = strong(showObs), value = FALSE)
-             ), # conditionalPanel Dot Plot
+               div(style = "text-align: center",
+                   "Actual sample size =",
+                   textOutput("N", inline = TRUE)
+               ), # end of sample size text
+               verbatimTextOutput("summary"),
+               br(),
+               actionButton("add", "Add Value",
+                            class = "btn btn-primary",
+                            width = "100px"),
+               shinyjs::disabled(actionButton("delete", "Delete Value",
+                                              class = "btn btn-primary",
+                                              width = "100px")),
+               br(),br(),
+               shinyjs::disabled(actionButton("update", "Update",
+                                              class = "btn btn-primary",
+                                              width = "100px")),
+               shinyjs::disabled(actionButton("reset", "Reset",
+                                              class = "btn btn-warning",
+                                              width = "100px")),
+               hr(),
+               checkboxInput("ragValue",
+                             label = strong(showObs), value = FALSE),
 
-             conditionalPanel(
-                 'input.dataset === "Histogram"',
-                 checkboxInput("ragValue2",
-                               label = strong(showObs), value = FALSE),
-                 hr(),
-                 sliderInputUI("bins1", "Number of bins: Histogram 1", value = 5),
-                 sliderInputUI("bins2", "Number of bins: Histogram 2", value = 14),
-                 hr(),
-             ), # conditionalPanel histogram
+               #### conditional UI: Histogram sliders
+               uiOutput("plotUISliders")
 
-        ), # sidebarPanel
-
-        mainPanel(width = 9,
-              tabsetPanel(type = "tabs", selected = "Histogram",
-                          id = 'dataset',
-
-                  tabPanel("Dot Plot",
-                           fluidRow(br(),
-                                column(3, DTOutput("dotPlotDT")),
-                                column(9,
-                                       br(),
-                                       plotOutput("dotPlotSimple", height = 200),
-                                       br(), br(),
-                                       plotOutput("dotPlotStacked", height = 300),
-                                ), # column 9
-                          ), # fluidRow
-                    ), # tabPanel Dot Plot
-
-                  tabPanel("Histogram",
-                           fluidRow(br(),
-                                column(3, DTOutput("histPlotDT")),
-                                column(9,
-                                       br(),
-                                       plotOutput("distPlot1", height = 350),
-                                       br(), br(),
-                                       plotOutput("distPlot2", height = 350),
-                                ), # column 9
-                           ), # fluidRow
-                    ) # tabPanel Histogram
-
-                ) # tabsetPanel
-        ) # mainPanel
-    ) # sidebarLayout
+           ),
+        ),
+        column(2,
+           wellPanel(
+               HTML("<center><h2>Dataset</h2></center>"),
+               hr(),
+               DT::DTOutput("myDT"),
+           ),
+        ),
+        column(8,
+               uiOutput("plotUIHeader"),
+               uiOutput("showUIPlot"),
+        ),
+    )
 ) # fluidPage
 
 

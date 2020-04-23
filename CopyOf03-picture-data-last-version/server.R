@@ -4,10 +4,15 @@ shinyServer(function(input, output, session) {
 
     data <- reactiveVal(df)
     reVal <-  reactiveValues()
+    dataSet <- reactiveValues(real = df,
+                              virtual = df,
+                              size = nrow(df))
+
 
     myData <- reactive({
         datatable(
-            data(),
+#            data(),
+            dataSet$virtual,
             selection = 'single',
             editable = list(
                 target = "cell", disable = list(columns = 0)),
@@ -27,9 +32,9 @@ shinyServer(function(input, output, session) {
     source("R/dotplots.R", local = TRUE)
 
 
-    # calculate sampe size for info string
+    # calculate sample size for info string
     output$N <- renderText({
-        length(data()[[1]])
+        nrow(data())
     })
 
     observeEvent(reVal$info, {
@@ -74,7 +79,8 @@ shinyServer(function(input, output, session) {
         data(t)
         if (reVal$table == "Histogram") {
             output$histPlotDT = renderDT(myData())
-        } else {
+        }
+        if (reVal$table == "Dot Plot") {
             output$dotPlotDT = renderDT(myData())
         }
     })
@@ -90,10 +96,10 @@ shinyServer(function(input, output, session) {
     })
 
     observeEvent(input$dataset, {
-        if (isolate(input$dataset) == "Histogram") {
+        if (input$dataset == "Histogram") {
             reVal$rows_selected <- reactive(input$histPlotDT_rows_selected)
         }
-        if (isolate(input$dataset) == "Dot Plot") {
+        if (input$dataset == "Dot Plot") {
             reVal$rows_selected <- reactive(input$dotPlotDT_rows_selected)
         }
     })
@@ -103,23 +109,40 @@ shinyServer(function(input, output, session) {
             session$sendCustomMessage(type = 'myMessage',
               message = "Select row you want to delete.")
         } else {
-
-            data(data()[-(reVal$rows_selected()), , drop = FALSE])
+#            data(data()[-(reVal$rows_selected()), , drop = FALSE])
+            dataSet$virtual <- dataSet$virtual[-(reVal$rows_selected()), , drop = FALSE]
 #            dataModified <<- data()[-(re()), , drop = FALSE]
         }
     })
 
     observeEvent(input$add, {
         t <- rbind(median(data()[[1]]), data())
-        data(t)
+#        data(t)
     })
 
     observeEvent(input$reset, {
-        data(dataOrig)
+        dataSet$real <-  dataOrig
+        dataSet$virtual <-  dataOrig
     })
 
     output$summary <- renderPrint({
-        summary(data())
+        summary(dataSet$real)
+    })
+
+    observe({
+        toggleState(id = "delete", condition = !is.null(reVal$rows_selected()))
+    })
+
+    observe({
+        req(input$update > 0, cancelOutput = TRUE)
+
+
+        dataSet$real <- dataSet$virtual
+        dataModified <<- dataSet$real
+
+        # output$summary <- renderPrint({
+        #     summary(dataSet$real)
+        # })
     })
 
 

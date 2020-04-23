@@ -1,8 +1,8 @@
 # itns-03 PICTURE DATA 2020-04-17
 
-myPanelText = "Frequency histogram of verbatim transcription data in percent,
-                 for the laptop group, with N = "
-myPanelText1 = " from Study 1 of Mueller and Oppenheimer (2014)"
+myPanelText = glue::glue("Frequency histogram of verbatim transcription data in percent,
+                   for the laptop group, with N = ", {nrow(df)},
+                   " from Study 1 of Mueller and Oppenheimer (2014)")
 
 showObs = "Individual observations (rug 1-d plot)"
 
@@ -21,6 +21,7 @@ sliderInputUI <- function(id, label="Number of bins:", min=5, max=20, value=9) {
 
 shinyUI <- fluidPage(
 
+    useShinyjs(),
     singleton(
         tags$head(tags$script(src = "message-handler.js"))
     ),
@@ -30,16 +31,16 @@ shinyUI <- fluidPage(
     sidebarLayout(
         sidebarPanel(width = 3,
              helpText(myPanelText,
-                      textOutput("N", inline = TRUE),
-                      myPanelText1,
                       hr(),
+                      p("Number of observation is actually: ",
+                      textOutput('N', inline = TRUE)),
                       ), # helpText
              verbatimTextOutput("summary"),
              hr(),
-             actionButton("add", "Add Row",
+             actionButton("add", "Add Value",
                           class = "btn btn-primary",
                           width = "100px"),
-             actionButton("delete", "Delete Row",
+             actionButton("delete", "Delete Value",
                           class = "btn btn-primary",
                           width = "100px"),
              br(),br(),
