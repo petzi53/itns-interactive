@@ -1,10 +1,18 @@
-# itns-03 PICTURE DATA 2020-04-20
+# itns-03 PICTURE DATA 2020-04-24
 
+###########   functions without reactive values   #############
+
+source("R/init.R", local = TRUE)
+
+###########   central server function #################
 
 shinyServer(function(input, output, session) {
 
-    ### Initialize server (first run)
-    source("R/init.R", local = TRUE)
+    # first UI-run displays button "Dot Plot"
+    # and display the plot of the histogram
+    # = plotHeader of "Histogram"
+    plotHeader <- "Dot Plot"
+    plotButton <- "Histogram"
 
     ### Generate histograms with different bins ----
     source("R/histograms.R", local = TRUE)
@@ -17,12 +25,14 @@ shinyServer(function(input, output, session) {
 
     data <- reactiveValues(
         real = as_tibble(dataOriginal),
-        virtual = as_tibble(rowid_to_column(dataOriginal))
+        virtual = as_tibble(rowid_to_column(dataOriginal)),
+        dirty = FALSE
         )
 
     showData <- reactive({
         DT::datatable(
             data$virtual,
+            options = list(stateSave = TRUE),
             rownames = FALSE,
             selection = 'single',
             colnames = c('ID' = 1),
@@ -30,46 +40,51 @@ shinyServer(function(input, output, session) {
                 target = "cell", disable = list(columns = 0))
         ) %>%
         DT::formatRound(columns = 1, digits = 0) %>%
+        # in future change number of digits
+        # by maximal decimal places in vector (column)
         DT::formatRound(columns = 2, digits = 1)
     })
 
     proxy <- dataTableProxy("myDT")
 
-    getCellValue <-  function(info) {
-        data$dirty = TRUE
-        i = info$row
-        j = info$col
-        k = tryCatch({
-            as.numeric(info$value)
-        }, warning = function(war) {
-            data$dirty = FALSE
-            k = data$virtual[i,j]
-        })
-        data$virtual[i,j] = k
-        data$virtual
-    }
-
-    observeEvent(input$myDT_cell_edit, {
-        showData <- DT::replaceData(
-            proxy,
-            getCellValue(input$myDT_cell_edit),
-            resetPaging = FALSE
-            )
-    })
+    # getCellValue <-  function(info) {
+    #     i = info$row
+    #     j = info$col + 1 # (+1 because of special colum rowid)
+    #     k = info$value
+    #         tryCatch({
+    #             k = as.numeric(k)
+    #             shinyjs::enable(id = "reset")
+    #             shinyjs::enable(id = "update")
+    #             print(data$virtual)
+    #             print(class(data$virtual))
+    #             cat(file = stderr(), "Cell1", data$virtual[i,j][[1]],
+    #                 "Class Cell1", class(data$virtual[i,j][[1]]), "\n")
+    #             data$virtual[i,j][[1]] = k
+    #             print(data$virtual)
+    #             print(class(data$virtual))
+    #             cat(file = stderr(), "Cell2", data$virtual[i,j][[1]],
+    #                 "Class Cell2", class(data$virtual[i,j][[1]]), "\n")
+    #         }, warning = function(war) {
+    #             print(data$virtual)
+    #             print(class(data$virtual))
+    #             cat(file = stderr(), "Cell3", data$virtual[i,j][[1]],
+    #                 "Class Cell3", class(data$virtual[i,j][[1]]), "\n")
+    #             data$virtual[i,j][[1]] = data$virtual[i,j][[1]]
+    #             print(data$virtual)
+    #             print(class(data$virtual))
+    #             cat(file = stderr(), "Cell4", data$virtual[i,j][[1]],
+    #                 "Class Cell4", class(data$virtual[i,j][[1]]), "\n")
+    #         })
+    #     data$virtual
+    #
+    # }
 
 
 #######################  Outputs  ############################
 
-    sliderInputUI <- function(id, label="Number of bins:", min=5, max=20, value=9) {
-        sliderInput(
-            id,
-            label = label,
-            min = min,
-            max = max,
-            value = value
-        )
-    }
-
+    # check state of DT
+    # observeEvent(input$myDT_rows_selected,{
+    #     output$info = renderPrint(input$myDT_state)})
 
     output$myDT <- DT::renderDT(showData())
 
@@ -83,55 +98,46 @@ shinyServer(function(input, output, session) {
     })
 
 
+##########################   Observer (mostly Buttons)    ###########################
 
-##############  modalDialog for add value  ###################
-
-    maxValue <- function() {
-        round(sd(data$virtual[[2]]) * 6, 0)
+    getCellValue <-  function(info) {
+        k = NULL
+        i = info$row
+        j = info$col + 1 # +1 because of rowid_to_column
+        k =  tryCatch({
+            as.numeric(info$value)
+            }, warning = function(war) {
+                shinyFeedback::showSnackbar("valueNotChanged")
+                k <<- as.numeric(data$virtual[i,j][[1]])
+            }, finally = {
+                if (is.null(k)) {
+                    shinyjs::enable(id = "reset")
+                    shinyjs::enable(id = "update")
+                }
+                k = as.numeric(k)
+            })
+        shinyjs::disable(id = "delete")
+        data$virtual[i,j][[1]] = k
+        data$virtual
     }
 
-    # Return the UI for a modal dialog with data selection input. If 'failed' is
-    # TRUE, then display a message that the previous value was invalid.
-    dataModal <- function(failed = FALSE) {
-        modalDialog(
-            numericInput("newValue", "New value:",
-                      value = NULL, min = 0, max = maxValue(),
-                      width = '100px'
-            ),
-            span('(Allowed for this dataset are positive values smaller',
-                 'than 6 times of the standard deviations, which is currently'),
-            maxValue(),
-            span('.)', .noWS = "before"),
-            if (failed)
-                div(tags$b("Invalid value.", style = "color: red;")),
 
-            footer = tagList(
-                modalButton("Cancel"),
-                actionButton("ok", "OK")
-            )
+
+    # replaceData requires a dataframe in the second argument,
+    # and the additional column for the rownames must be removed
+    observeEvent(input$myDT_cell_edit, {
+        showData <- DT::replaceData(
+            proxy,
+            getCellValue(input$myDT_cell_edit)[,-1],
+            resetPaging = FALSE
         )
-    }
 
-
-
-    # When OK button is pressed, check the new value.
-    # If successful remove the modal.
-    # If not successful than show another modal,
-    # but this time with a failure message.
-    observeEvent(input$ok, {
-        # Check if input is allowed
-        if (input$newValue >= 0 && input$newValue <= maxValue() &&
-            !is.logical(input$newValue)) {
-            data$virtual <- rbind(data$virtual,
-                  c(data$virtual$rowid[nrow(data$virtual)] + 1, input$newValue))
-            removeModal()
-        } else {
-            showModal(dataModal(failed = TRUE))
-        }
     })
 
-##########################    Buttons    ###########################
 
+    # Do not change UI values in the first run
+    # but otherwise run always, even with initial setting
+    # where input$plotBtn = 0
     observeEvent(input$plotBtn, {
         if (input$plotBtn > 0) {      # Do not change UI values in the first run
             if (plotButton == "Dot Plot") {
@@ -167,8 +173,8 @@ shinyServer(function(input, output, session) {
         if (plotHeader == "Histogram") {
             output$plotUISliders <- renderUI({
                 tagList(
-                    sliderInputUI("bins1", "Number of bins: Histogram 1", value = 5),
-                    sliderInputUI("bins2", "Number of bins: Histogram 2", value = 14)
+                    sliderValue("bins1", "Number of bins: Histogram 1", value = 5),
+                    sliderValue("bins2", "Number of bins: Histogram 2", value = 14)
                 ) # tagList
             }) # output sliders
             output$showUIPlot <- renderUI({
@@ -181,7 +187,7 @@ shinyServer(function(input, output, session) {
             }) # output histogram
         }
     },
-    ignoreNULL = FALSE            # run this observer also with initial settings
+    ignoreNULL = FALSE  # run this observer always, even with initial settings
     )
 
 
@@ -192,10 +198,10 @@ shinyServer(function(input, output, session) {
         shinyjs::disable(id = "delete")
         })
 
-    observeEvent(input$myDT_cell_edit, {
-        shinyjs::toggleState(id = "reset", data$dirty == TRUE)
-        shinyjs::toggleState(id = "update", data$dirty == TRUE)
-    })
+    # observeEvent(input$myDT_cell_edit, {
+    #     shinyjs::toggleState(id = "reset", data$dirty == TRUE)
+    #     shinyjs::toggleState(id = "update", data$dirty == TRUE)
+    # })
 
     observeEvent(input$myDT_rows_selected, {
         shinyjs::enable(id = "delete")
@@ -206,6 +212,8 @@ shinyServer(function(input, output, session) {
         data$real <- as_tibble(dataOriginal)
         shinyjs::disable(id = "reset")
         shinyjs::disable(id = "update")
+        # TODO: eigenes Modalfenster von shinyWidgets für Warnung!
+        shinyFeedback::showSnackbar("resetMessage")
     })
 
     observeEvent(input$update, {
@@ -216,10 +224,23 @@ shinyServer(function(input, output, session) {
 
 
     observeEvent(input$add, {
-        showModal(dataModal())
-        shinyjs::enable(id = "reset")
-        shinyjs::enable(id = "update")
+        # TODO: Change to a shinyWidgets modal dialog
+        showModal(dataModal(nrow(data$virtual) + 1))
     })
 
+    observeEvent(input$ok, {
+        # Check if input is allowed
+        if (!is.logical(input$newValue)) {
+            data$virtual <- rbind(data$virtual,
+                                  c(data$virtual$rowid[nrow(data$virtual)] + 1,
+                                    input$newValue))
+            shinyjs::enable(id = "reset")
+            shinyjs::enable(id = "update")
+            shinyFeedback::showSnackbar("sucessfullyAdded")
+        } else {
+            shinyFeedback::showSnackbar("notAdded")
+        }
+        removeModal()
+    })
 
 }) # shinyServer

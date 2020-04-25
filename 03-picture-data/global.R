@@ -12,6 +12,7 @@ library(ggthemes)
 library(glue)
 library(shinyjs)
 library(shinyFeedback)
+library(shinyWidgets)
 
 
 # library(reactlog)
@@ -19,7 +20,3 @@ library(shinyFeedback)
 # library(itns)
 
 # options(shiny.reactlog = TRUE)
-
-
-
-

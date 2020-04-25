@@ -6,6 +6,10 @@ myPanelText = glue::glue("Frequency histogram of verbatim transcription data in 
 
 showObs = "Individual observations"
 
+shinyFeedback::snackbar("valueNotChanged",
+                        "Only numbers allowed",
+                        style = "background-color: orange; color: white;")
+
 
 shinyUI <- fluidPage(
 
@@ -21,7 +25,15 @@ shinyUI <- fluidPage(
                HTML("<center><h2>Picture Data</h2></center>"),
                HTML("<center><h4>(Control Panel)</h4></center>"),
                hr(),
-
+#               verbatimTextOutput("info"),
+               shinyFeedback::snackbar("sucessfullyAdded",
+                        "Value added successfully at the end of the dataset.",
+                        style = "text-align: center;
+                        background-color: green; color: white;"),
+               shinyFeedback::snackbar("notAdded",
+                        "No value added.",
+                        style = "text-align: center;
+                        background-color: orange; color: white;"),
                div(style = "text-align: center",
                    "Show data as: ", br(),
                actionButton("plotBtn", "Histogram", # but plot dot displayed
@@ -49,6 +61,10 @@ shinyUI <- fluidPage(
                shinyjs::disabled(actionButton("reset", "Reset",
                                               class = "btn btn-warning",
                                               width = "100px")),
+               shinyFeedback::snackbar("resetMessage",
+                                        "Data sucessfully reset.",
+                                        style = "text-align: center;
+                                       background-color: green; color: white;"),
                hr(),
                checkboxInput("ragValue",
                              label = strong(showObs), value = FALSE),
