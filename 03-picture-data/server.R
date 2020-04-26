@@ -33,7 +33,7 @@ shinyServer(function(input, output, session) {
             data$virtual,
             options = list(stateSave = TRUE),
             rownames = FALSE,
-            selection = 'single',
+#            selection = 'single',
             colnames = c('ID' = 1),
             editable = list(
                 target = "cell", disable = list(columns = 0))
@@ -86,28 +86,69 @@ shinyServer(function(input, output, session) {
     })
 
 
-    # Do not change UI values in the first run
-    # but otherwise run always, even with initial setting
-    # where input$plotBtn = 0
+    # # Do not change UI values in the first run
+    # # but otherwise run always, even with initial setting
+    # # where input$plotBtn = 0
+    # observeEvent(input$plotBtn, {
+    #     if (input$plotBtn > 0) {      # Do not change UI values in the first run
+    #         if (plotButton == "Dot Plot") {
+    #             updateActionButton(
+    #                 session, "plotBtn", "Histogram")
+    #             plotHeader <<- "Dot Plot"
+    #             plotButton <<- "Histogram"
+    #         } else if (plotButton == "Histogram") {
+    #             updateActionButton(
+    #                 session, "plotBtn", "Dot Plot")
+    #             plotHeader <<- "Histogram"
+    #             plotButton <<- "Dot Plot"
+    #         } # else if
+    #     } # outer if
+    #     ## always print correct header and plot type
+    #     output$plotUIHeader <- renderUI({
+    #         HTML("<center><h2>", plotHeader, "</h2></center>")
+    #     })
+    #     if (plotHeader == "Dot Plot") {
+    #         output$plotUISliders <- renderUI("") # output empty string
+    #         output$showUIPlot <- renderUI({
+    #             tagList(
+    #                 output$dotPlotSimple <- renderPlot({
+    #                     myDotPlot(myDotPlotSimple)
+    #                 }),
+    #                 br(),
+    #                 output$dotPlotStacked <- renderPlot({
+    #                     myDotPlot(myDotPlotStacked)
+    #                 })
+    #             ) # taglist
+    #         }) # output dot plot
+    #     }
+    #     if (plotHeader == "Histogram") {
+    #         output$plotUISliders <- renderUI({
+    #             tagList(
+    #                 sliderValue("bins1", "Number of bins: Histogram 1", value = 5),
+    #                 sliderValue("bins2", "Number of bins: Histogram 2", value = 14)
+    #             ) # tagList
+    #         }) # output sliders
+    #         output$showUIPlot <- renderUI({
+    #             tagList(
+    #                 br(),
+    #                 plotOutput("distPlot1", height = 350),
+    #                 br(), br(),
+    #                 plotOutput("distPlot2", height = 350),
+    #             ) # tagList
+    #         }) # output histogram
+    #     }
+    # },
+    # ignoreNULL = FALSE  # run this observer always, even with initial settings
+    # )
+
+    ###############################################################
+
+
     observeEvent(input$plotBtn, {
-        if (input$plotBtn > 0) {      # Do not change UI values in the first run
-            if (plotButton == "Dot Plot") {
-                updateActionButton(
-                    session, "plotBtn", "Histogram")
-                plotHeader <<- "Dot Plot"
-                plotButton <<- "Histogram"
-            } else if (plotButton == "Histogram") {
-                updateActionButton(
-                    session, "plotBtn", "Dot Plot")
-                plotHeader <<- "Histogram"
-                plotButton <<- "Dot Plot"
-            } # else if
-        } # outer if
-        ## always print correct header and plot type
         output$plotUIHeader <- renderUI({
-            HTML("<center><h2>", plotHeader, "</h2></center>")
+            HTML("<center><h2>", input$plotBtn, "</h2></center>")
         })
-        if (plotHeader == "Dot Plot") {
+        if (input$plotBtn == "Dot Plot") {
             output$plotUISliders <- renderUI("") # output empty string
             output$showUIPlot <- renderUI({
                 tagList(
@@ -121,7 +162,7 @@ shinyServer(function(input, output, session) {
                 ) # taglist
             }) # output dot plot
         }
-        if (plotHeader == "Histogram") {
+        if (input$plotBtn == "Histogram") {
             output$plotUISliders <- renderUI({
                 tagList(
                     sliderValue("bins1", "Number of bins: Histogram 1", value = 5),
@@ -137,10 +178,7 @@ shinyServer(function(input, output, session) {
                 ) # tagList
             }) # output histogram
         }
-    },
-    ignoreNULL = FALSE  # run this observer always, even with initial settings
-    )
-
+    })
 
     observeEvent(input$delete, {
         data$virtual <- data$virtual[-input$myDT_rows_selected, , drop = FALSE]

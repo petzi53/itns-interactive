@@ -34,13 +34,26 @@ shinyUI <- fluidPage(
                         "No value added.",
                         style = "text-align: center;
                         background-color: orange; color: white;"),
-               div(style = "text-align: center",
-                   "Show data as: ", br(),
-               actionButton("plotBtn", "Histogram", # but plot dot displayed
-                            class = "btn btn-success",
-                            width = "100px"),
-               hr(),
-               ), # end of button div
+               shinyWidgets::radioGroupButtons(
+                            inputId = "plotBtn",
+                            choices = c("Histogram",
+                                        "Dot Plot"),
+                            selected = "Histogram",
+                            status = "success",
+                            checkIcon = list(
+                                yes = icon("check-square"),
+                                no = icon("square-o")
+                            ),
+                            justified = TRUE
+                        ),
+               br(),
+               # div(style = "text-align: center",
+               #     "Show data as: ", br(),
+               # actionButton("plotBtn", "Histogram", # but plot dot displayed
+               #              class = "btn btn-success",
+               #              width = "100px"),
+               # hr(),
+               # ), # end of button div
 
                div(style = "text-align: center",
                    "Actual sample size =",
