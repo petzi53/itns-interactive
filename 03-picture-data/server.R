@@ -25,8 +25,7 @@ shinyServer(function(input, output, session) {
 
     data <- reactiveValues(
         real = as_tibble(dataOriginal),
-        virtual = as_tibble(rowid_to_column(dataOriginal)),
-        dirty = FALSE
+        virtual = as_tibble(rowid_to_column(dataOriginal))
         )
 
     showData <- reactive({
@@ -49,7 +48,9 @@ shinyServer(function(input, output, session) {
 
     # getCellValue <-  function(info) {
     #     i = info$row
-    #     j = info$col + 1 # (+1 because of special colum rowid)
+    ###   (+1 because of special colum rowid and rownames = FALSE)
+    ###   https://stackoverflow.com/a/54887868/7322615
+    #     j = info$col + 1
     #     k = info$value
     #         tryCatch({
     #             k = as.numeric(k)
@@ -100,38 +101,59 @@ shinyServer(function(input, output, session) {
 
 ##########################   Observer (mostly Buttons)    ###########################
 
-    getCellValue <-  function(info) {
-        k = NULL
+    #############   FIRST VERSION #############
+    # getCellValue <-  function(info) {
+    #     k = NULL
+    #     i = info$row
+    #     j = info$col + 1 # +1 because of rowid_to_column
+    #     k =  tryCatch({
+    #         as.numeric(info$value)
+    #         }, warning = function(war) {
+    #             shinyFeedback::showSnackbar("valueNotChanged")
+    #             k <<- as.numeric(data$virtual[i,j][[1]])
+    #         }, finally = {
+    #             if (is.null(k)) {
+    #                 shinyjs::enable(id = "reset")
+    #                 shinyjs::enable(id = "update")
+    #             }
+    #             k = as.numeric(k)
+    #         })
+    #     shinyjs::disable(id = "delete")
+    #     data$virtual[i,j][[1]] = k
+    #     data$virtual
+    # }
+
+
+    #############   SECOND VERSION #############
+    # checkValue <- function(info) {
+    #     v = "[\\!#$%&()*/:;<=>?@_`|~{}ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ]"
+    #     i = info$row
+    #     j = info$col + 1 # +1 because of rowid_to_column
+    #     k = info$value
+    #     if (regexec(v, k) == -1) {
+    #         data$virtual[i,j][[1]] = as.numeric(k)
+    #     }
+    #     data$virtual
+    # }
+
+    #############   THIRD VERSION   ##################
+    checkValue <- function(info) {
         i = info$row
-        j = info$col + 1 # +1 because of rowid_to_column
-        k =  tryCatch({
-            as.numeric(info$value)
-            }, warning = function(war) {
-                shinyFeedback::showSnackbar("valueNotChanged")
-                k <<- as.numeric(data$virtual[i,j][[1]])
-            }, finally = {
-                if (is.null(k)) {
-                    shinyjs::enable(id = "reset")
-                    shinyjs::enable(id = "update")
-                }
-                k = as.numeric(k)
-            })
-        shinyjs::disable(id = "delete")
-        data$virtual[i,j][[1]] = k
+        j = info$col + 1
+        oldValue  <-  data$virtual[i,j][[1]]
+        newValue = suppressWarnings(isolate(DT::coerceValue(info$value, as.double(oldValue))))
+        if (!is.na(newValue)) {data$virtual[i,j][[1]] <- newValue}
         data$virtual
     }
-
-
 
     # replaceData requires a dataframe in the second argument,
     # and the additional column for the rownames must be removed
     observeEvent(input$myDT_cell_edit, {
         showData <- DT::replaceData(
             proxy,
-            getCellValue(input$myDT_cell_edit)[,-1],
+            checkValue(input$myDT_cell_edit)[,-1],
             resetPaging = FALSE
         )
-
     })
 
 
