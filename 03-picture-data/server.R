@@ -46,41 +46,6 @@ shinyServer(function(input, output, session) {
 
     proxy <- dataTableProxy("myDT")
 
-    # getCellValue <-  function(info) {
-    #     i = info$row
-    ###   (+1 because of special colum rowid and rownames = FALSE)
-    ###   https://stackoverflow.com/a/54887868/7322615
-    #     j = info$col + 1
-    #     k = info$value
-    #         tryCatch({
-    #             k = as.numeric(k)
-    #             shinyjs::enable(id = "reset")
-    #             shinyjs::enable(id = "update")
-    #             print(data$virtual)
-    #             print(class(data$virtual))
-    #             cat(file = stderr(), "Cell1", data$virtual[i,j][[1]],
-    #                 "Class Cell1", class(data$virtual[i,j][[1]]), "\n")
-    #             data$virtual[i,j][[1]] = k
-    #             print(data$virtual)
-    #             print(class(data$virtual))
-    #             cat(file = stderr(), "Cell2", data$virtual[i,j][[1]],
-    #                 "Class Cell2", class(data$virtual[i,j][[1]]), "\n")
-    #         }, warning = function(war) {
-    #             print(data$virtual)
-    #             print(class(data$virtual))
-    #             cat(file = stderr(), "Cell3", data$virtual[i,j][[1]],
-    #                 "Class Cell3", class(data$virtual[i,j][[1]]), "\n")
-    #             data$virtual[i,j][[1]] = data$virtual[i,j][[1]]
-    #             print(data$virtual)
-    #             print(class(data$virtual))
-    #             cat(file = stderr(), "Cell4", data$virtual[i,j][[1]],
-    #                 "Class Cell4", class(data$virtual[i,j][[1]]), "\n")
-    #         })
-    #     data$virtual
-    #
-    # }
-
-
 #######################  Outputs  ############################
 
     # check state of DT
@@ -101,42 +66,6 @@ shinyServer(function(input, output, session) {
 
 ##########################   Observer (mostly Buttons)    ###########################
 
-    #############   FIRST VERSION #############
-    # getCellValue <-  function(info) {
-    #     k = NULL
-    #     i = info$row
-    #     j = info$col + 1 # +1 because of rowid_to_column
-    #     k =  tryCatch({
-    #         as.numeric(info$value)
-    #         }, warning = function(war) {
-    #             shinyFeedback::showSnackbar("valueNotChanged")
-    #             k <<- as.numeric(data$virtual[i,j][[1]])
-    #         }, finally = {
-    #             if (is.null(k)) {
-    #                 shinyjs::enable(id = "reset")
-    #                 shinyjs::enable(id = "update")
-    #             }
-    #             k = as.numeric(k)
-    #         })
-    #     shinyjs::disable(id = "delete")
-    #     data$virtual[i,j][[1]] = k
-    #     data$virtual
-    # }
-
-
-    #############   SECOND VERSION #############
-    # checkValue <- function(info) {
-    #     v = "[\\!#$%&()*/:;<=>?@_`|~{}ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ]"
-    #     i = info$row
-    #     j = info$col + 1 # +1 because of rowid_to_column
-    #     k = info$value
-    #     if (regexec(v, k) == -1) {
-    #         data$virtual[i,j][[1]] = as.numeric(k)
-    #     }
-    #     data$virtual
-    # }
-
-    #############   THIRD VERSION   ##################
     checkValue <- function(info) {
         i = info$row
         j = info$col + 1
