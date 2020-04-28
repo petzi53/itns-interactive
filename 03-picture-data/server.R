@@ -1,23 +1,17 @@
-# itns-03 PICTURE DATA 2020-04-24
+# itns-03 PICTURE DATA 2020-04-28
 
 ###########   functions without reactive values   #############
 
-source("R/init.R", local = TRUE)
+source("R/init_server.R", local = TRUE)
 
 ###########   central server function #################
 
 shinyServer(function(input, output, session) {
 
-    # first UI-run displays button "Dot Plot"
-    # and display the plot of the histogram
-    # = plotHeader of "Histogram"
-    plotHeader <- "Dot Plot"
-    plotButton <- "Histogram"
-
     ### Generate histograms with different bins ----
     source("R/histograms.R", local = TRUE)
     #
-    ### Generate dotplots with rugs ----
+    ### Generate dotplots ----
     source("R/dotplots.R", local = TRUE)
 
 
@@ -33,7 +27,6 @@ shinyServer(function(input, output, session) {
             data$virtual,
             options = list(stateSave = TRUE),
             rownames = FALSE,
-#            selection = 'single',
             colnames = c('ID' = 1),
             editable = list(
                 target = "cell", disable = list(columns = 0))
@@ -70,8 +63,13 @@ shinyServer(function(input, output, session) {
         i = info$row
         j = info$col + 1
         oldValue  <-  data$virtual[i,j][[1]]
-        newValue = suppressWarnings(isolate(DT::coerceValue(info$value, as.double(oldValue))))
-        if (!is.na(newValue)) {data$virtual[i,j][[1]] <- newValue}
+        newValue = suppressWarnings(
+            isolate(DT::coerceValue(info$value, oldValue)))
+        if (!is.na(newValue)) {
+            data$virtual[i,j][[1]] <- newValue
+            shinyjs::enable(id = "update")
+            shinyjs::enable(id = "reset")
+        }
         data$virtual
     }
 
@@ -85,100 +83,24 @@ shinyServer(function(input, output, session) {
         )
     })
 
-
-    # # Do not change UI values in the first run
-    # # but otherwise run always, even with initial setting
-    # # where input$plotBtn = 0
-    # observeEvent(input$plotBtn, {
-    #     if (input$plotBtn > 0) {      # Do not change UI values in the first run
-    #         if (plotButton == "Dot Plot") {
-    #             updateActionButton(
-    #                 session, "plotBtn", "Histogram")
-    #             plotHeader <<- "Dot Plot"
-    #             plotButton <<- "Histogram"
-    #         } else if (plotButton == "Histogram") {
-    #             updateActionButton(
-    #                 session, "plotBtn", "Dot Plot")
-    #             plotHeader <<- "Histogram"
-    #             plotButton <<- "Dot Plot"
-    #         } # else if
-    #     } # outer if
-    #     ## always print correct header and plot type
-    #     output$plotUIHeader <- renderUI({
-    #         HTML("<center><h2>", plotHeader, "</h2></center>")
-    #     })
-    #     if (plotHeader == "Dot Plot") {
-    #         output$plotUISliders <- renderUI("") # output empty string
-    #         output$showUIPlot <- renderUI({
-    #             tagList(
-    #                 output$dotPlotSimple <- renderPlot({
-    #                     myDotPlot(myDotPlotSimple)
-    #                 }),
-    #                 br(),
-    #                 output$dotPlotStacked <- renderPlot({
-    #                     myDotPlot(myDotPlotStacked)
-    #                 })
-    #             ) # taglist
-    #         }) # output dot plot
-    #     }
-    #     if (plotHeader == "Histogram") {
-    #         output$plotUISliders <- renderUI({
-    #             tagList(
-    #                 sliderValue("bins1", "Number of bins: Histogram 1", value = 5),
-    #                 sliderValue("bins2", "Number of bins: Histogram 2", value = 14)
-    #             ) # tagList
-    #         }) # output sliders
-    #         output$showUIPlot <- renderUI({
-    #             tagList(
-    #                 br(),
-    #                 plotOutput("distPlot1", height = 350),
-    #                 br(), br(),
-    #                 plotOutput("distPlot2", height = 350),
-    #             ) # tagList
-    #         }) # output histogram
-    #     }
-    # },
-    # ignoreNULL = FALSE  # run this observer always, even with initial settings
-    # )
-
-    ###############################################################
-
+    observeEvent({
+            input$bins1
+            input$bins2} , {
+        slider1 <<- input$bins1
+        slider2 <<- input$bins2
+    })
 
     observeEvent(input$plotBtn, {
         output$plotUIHeader <- renderUI({
             HTML("<center><h2>", input$plotBtn, "</h2></center>")
         })
         if (input$plotBtn == "Dot Plot") {
-            output$plotUISliders <- renderUI("") # output empty string
-            output$showUIPlot <- renderUI({
-                tagList(
-                    output$dotPlotSimple <- renderPlot({
-                        myDotPlot(myDotPlotSimple)
-                    }),
-                    br(),
-                    output$dotPlotStacked <- renderPlot({
-                        myDotPlot(myDotPlotStacked)
-                    })
-                ) # taglist
-            }) # output dot plot
-        }
-        if (input$plotBtn == "Histogram") {
-            output$plotUISliders <- renderUI({
-                tagList(
-                    sliderValue("bins1", "Number of bins: Histogram 1", value = 5),
-                    sliderValue("bins2", "Number of bins: Histogram 2", value = 14)
-                ) # tagList
-            }) # output sliders
-            output$showUIPlot <- renderUI({
-                tagList(
-                    br(),
-                    plotOutput("distPlot1", height = 350),
-                    br(), br(),
-                    plotOutput("distPlot2", height = 350),
-                ) # tagList
-            }) # output histogram
+            renderUIDotPlot()
+        } else {
+            renderUIHistogram()
         }
     })
+
 
     observeEvent(input$delete, {
         data$virtual <- data$virtual[-input$myDT_rows_selected, , drop = FALSE]
@@ -186,11 +108,6 @@ shinyServer(function(input, output, session) {
         shinyjs::enable(id = "update")
         shinyjs::disable(id = "delete")
         })
-
-    # observeEvent(input$myDT_cell_edit, {
-    #     shinyjs::toggleState(id = "reset", data$dirty == TRUE)
-    #     shinyjs::toggleState(id = "update", data$dirty == TRUE)
-    # })
 
     observeEvent(input$myDT_rows_selected, {
         shinyjs::enable(id = "delete")
@@ -211,7 +128,6 @@ shinyServer(function(input, output, session) {
         shinyjs::disable(id = "update")
     })
 
-
     observeEvent(input$add, {
         # TODO: Change to a shinyWidgets modal dialog
         showModal(dataModal(nrow(data$virtual) + 1))
@@ -231,5 +147,16 @@ shinyServer(function(input, output, session) {
         }
         removeModal()
     })
+
+    observeEvent(input$msgHelp, {
+        sendSweetAlert(
+            session = session,
+            title = msgHelpTitle,
+            text = msgHelpText,
+            html = TRUE,
+            width = 1000
+        )
+    })
+
 
 }) # shinyServer

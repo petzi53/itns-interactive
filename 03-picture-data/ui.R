@@ -1,10 +1,11 @@
-# itns-03 PICTURE DATA 2020-04-20
+# itns-03 PICTURE DATA 2020-04-28
 
-myPanelText = glue::glue("Frequency histogram of verbatim transcription data in percent,
-                   for the laptop group, with N = ", {nrow(df)},
-                   " from Study 1 of Mueller and Oppenheimer (2014)")
+#### Textstrings for messages and UI
 
 showObs = "Individual observations"
+
+###########
+
 
 shinyFeedback::snackbar("valueNotChanged",
                         "Only numbers allowed",
@@ -25,7 +26,6 @@ shinyUI <- fluidPage(
                HTML("<center><h2>Picture Data</h2></center>"),
                HTML("<center><h4>(Control Panel)</h4></center>"),
                hr(),
-#               verbatimTextOutput("info"),
                shinyFeedback::snackbar("sucessfullyAdded",
                         "Value added successfully at the end of the dataset.",
                         style = "text-align: center;
@@ -47,14 +47,6 @@ shinyUI <- fluidPage(
                             justified = TRUE
                         ),
                br(),
-               # div(style = "text-align: center",
-               #     "Show data as: ", br(),
-               # actionButton("plotBtn", "Histogram", # but plot dot displayed
-               #              class = "btn btn-success",
-               #              width = "100px"),
-               # hr(),
-               # ), # end of button div
-
                div(style = "text-align: center",
                    "Actual sample size =",
                    textOutput("N", inline = TRUE)
@@ -89,7 +81,17 @@ shinyUI <- fluidPage(
         ),
         column(2,
            wellPanel(
-               HTML("<center><h2>Dataset</h2></center>"),
+               div(
+               h2("Dataset"),
+                   actionBttn(
+                       inputId = "msgHelp",
+                       label = NULL,
+                       style = "material-circle",
+                       color = "success",
+                       icon = icon("question")
+                   ),
+                   style = "text-align: center",
+               ),
                hr(),
                DT::DTOutput("myDT"),
            ),

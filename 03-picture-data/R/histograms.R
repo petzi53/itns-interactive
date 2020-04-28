@@ -1,27 +1,26 @@
-# itns-03 PICTURE DATA 2020-04-24
+# itns-03 PICTURE DATA 2020-04-28
 # histograms.R
 
-#####################     included dataset    ###################
-
-## dataset converted: so that no extra file load is necessary
-## originated from df <- read_csv("Describe_Laptop.csv")
-## produced with df <- dput(df)
-df <- structure(list(`Transcription%` =
-                         c(13.7, 21.1, 15.2, 30.4, 12.8, 9.6, 9.3, 17.7,
-                           15.4, 8.7, 12.8, 10.6, 5.1, 16.7, 17.7, 8.7,
-                           26.4, 18, 19, 16.9, 18.8, 8.5, 1.2, 11.5,
-                           21.4, 10.3, 9, 12.8, 12, 34.7, 4.1)),
-                class = c("spec_tbl_df", "tbl_df", "tbl", "data.frame"),
-                row.names = c(NA, -31L),
-                spec =
-                    structure(list(cols = list(`Transcription%` =
-                                                   structure(list(), class = c("collector_double",
-                                                                               "collector"))),
-                                   default = structure(list(), class = c("collector_guess",
-                                                                         "collector")), skip = 1), class = "col_spec"))
-
-
 ################### Generate histograms #####################
+
+
+renderUIHistogram <- function() {
+    output$plotUISliders <- renderUI({
+        tagList(
+            sliderValue("bins1", "Number of bins: Histogram 1", value =  slider1),
+            sliderValue("bins2", "Number of bins: Histogram 2", value =  slider2)
+        ) # tagList
+    }) # output sliders
+    output$showUIPlot <- renderUI({
+        tagList(
+            br(),
+            plotOutput("distPlot1", height = 350),
+            br(), br(),
+            plotOutput("distPlot2", height = 350),
+        ) # tagList
+    }) # output histogram
+}
+
 
 plotHist <- function(binsNr, binBorders, histoTitle) {
 

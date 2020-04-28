@@ -13,6 +13,7 @@ library(glue)
 library(shinyjs)
 library(shinyFeedback)
 library(shinyWidgets)
+library(shinyBS)
 
 
 # library(reactlog)
@@ -20,3 +21,5 @@ library(shinyWidgets)
 # library(itns)
 
 # options(shiny.reactlog = TRUE)
+
+msgHelpTitle = "How to use exercise 'Picture Data'"
