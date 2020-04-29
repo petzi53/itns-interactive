@@ -25,19 +25,18 @@ myDotPlot <-  function(thePlot, dotPlotTitle, distance = 0.05) {
         # distance only used as experimental constant to change manually
 
     if (input$ragValue) {rugs = rugPlot} else {rugs = NULL}
-
     ggplot(data$real,
         aes_string(paste0("`", colnames(data$real)[1], "`"))) +
         ggthemes::theme_clean() +
         ggtitle(dotPlotTitle) +
-        scale_x_continuous(paste0("X (", colnames(data$real)[1], ")"),
-           breaks = seq(0, max(data$real[[1]] + 1), 1)) +
+        scale_x_continuous(
+            name = paste0("X (", colnames(data$real)[1], ")"),
+            n.breaks = 20) +
         scale_y_continuous(
            expand = expansion(add = distance),
                     NULL, breaks = NULL) +
         thePlot() +
         rugs
 }
-
 
 

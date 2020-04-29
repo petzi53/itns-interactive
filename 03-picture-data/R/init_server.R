@@ -44,6 +44,7 @@ slider2 = 15
 
 ######## A collection of server side text strings ##############
 
+
 msgHelpTitle = "How to use 'Picture Data'"
 
 msgHelpText =
@@ -53,7 +54,7 @@ msgHelpText =
         <ul>
         <li><strong>Change values: </strong>Double click on a cell to edit the value. Only numeric values are allowed. You can't edit the ID column.</li>
         <li><strong>Delete values: </strong>Select one or more rows, then click 'Delete value'.</li>
-        <li><strong>Add values: </strong>Click 'Add value' and enter in the dialog the new value. If it is a valud numeric entry it will be added as last record to your database.</li>
+        <li><strong>Add values: </strong>Click 'Add value' and enter in the dialog the new value. The new entry it will be added as last record to your database.</li>
         <li><strong>Update: </strong>Click 'Update' to apply all your changes to the plots and to reorder the IDs.</li>
         <li><strong>Reset: </strong>Click 'Reset' to return to the original dataset. All your changes will be lost.</li>
         </ul><hr>

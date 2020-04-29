@@ -31,9 +31,10 @@ plotHist <- function(binsNr, binBorders, histoTitle) {
         ggthemes::theme_clean() +
         scale_y_continuous(expand = expansion(mult = 0.1),
                            breaks = scales::breaks_extended(8)) +
-        scale_x_continuous(sec.axis =
-                           sec_axis(trans = ~., breaks = binBorders,
-                                    guide_axis(title = "Bin Boundaries"))) +
+        scale_x_continuous(
+            n.breaks = 20,
+            sec.axis = sec_axis(trans = ~., breaks = binBorders,
+                    guide_axis(title = "Bin Boundaries"))) +
         ggtitle(histoTitle) +
         labs(x = paste0("X (", colnames(data$real)[1], ")"), y = "Frequency") +
         rugs

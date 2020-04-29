@@ -70,6 +70,7 @@ shinyServer(function(input, output, session) {
             shinyjs::enable(id = "update")
             shinyjs::enable(id = "reset")
         }
+        shinyjs::disable(id = "delete")
         data$virtual
     }
 
@@ -107,29 +108,46 @@ shinyServer(function(input, output, session) {
         shinyjs::enable(id = "reset")
         shinyjs::enable(id = "update")
         shinyjs::disable(id = "delete")
+        if (length(input$myDT_rows_selected) > 1) {
+            shinyFeedback::showSnackbar("deleteIDs")
+        } else {
+            shinyFeedback::showSnackbar("deleteID")
+        }
         })
 
     observeEvent(input$myDT_rows_selected, {
         shinyjs::enable(id = "delete")
     })
 
+    observeEvent(input$wantReset, {
+        if (input$wantReset) {
+            data$virtual <- as_tibble(rowid_to_column(dataOriginal))
+            data$real <- as_tibble(dataOriginal)
+            shinyjs::disable(id = "reset")
+            shinyjs::disable(id = "update")
+            shinyFeedback::showSnackbar("resetID")
+        }
+    })
+
     observeEvent(input$reset, {
-        data$virtual <- as_tibble(rowid_to_column(dataOriginal))
-        data$real <- as_tibble(dataOriginal)
-        shinyjs::disable(id = "reset")
-        shinyjs::disable(id = "update")
-        # TODO: eigenes Modalfenster von shinyWidgets für Warnung!
-        shinyFeedback::showSnackbar("resetMessage")
+        confirmSweetAlert(
+            session = session,
+            inputId = "wantReset",
+            type = "warning",
+            title = "You will loose all your changes.
+            Do you really want to reset the dataset? "
+        )
+
     })
 
     observeEvent(input$update, {
         data$real <- as_tibble(data$virtual[2])
         data$virtual <- as_tibble(rowid_to_column(data$real))
         shinyjs::disable(id = "update")
+        shinyFeedback::showSnackbar("updateID")
     })
 
     observeEvent(input$add, {
-        # TODO: Change to a shinyWidgets modal dialog
         showModal(dataModal(nrow(data$virtual) + 1))
     })
 
@@ -141,9 +159,9 @@ shinyServer(function(input, output, session) {
                                     input$newValue))
             shinyjs::enable(id = "reset")
             shinyjs::enable(id = "update")
-            shinyFeedback::showSnackbar("sucessfullyAdded")
+            shinyFeedback::showSnackbar("addedID")
         } else {
-            shinyFeedback::showSnackbar("notAdded")
+            shinyFeedback::showSnackbar("notAddedID")
         }
         removeModal()
     })

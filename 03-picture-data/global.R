@@ -23,3 +23,4 @@ library(shinyBS)
 # options(shiny.reactlog = TRUE)
 
 msgHelpTitle = "How to use exercise 'Picture Data'"
+rowsSelected = NULL

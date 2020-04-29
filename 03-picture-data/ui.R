@@ -1,24 +1,60 @@
 # itns-03 PICTURE DATA 2020-04-28
 
-#### Textstrings for messages and UI
+#### Textstrings for messages and UI text elements
 
 showObs = "Individual observations"
+resetMsg = "Data sucessfully reset to the original dataset."
+updateMsg = "Dataset with your changes successfully updated."
+addedRowMsg = "Value added successfully at the end of the dataset."
+notAddedRowMsg = "Input not valid. Only numbers allowed."
+deleteMsg = "Selected row sucessfully deleted."
+deleteSeveralMsg = "Selected rows sucessfully deleted."
+
+mySnackbar <- function(snackbarID, snackbarMsg, snackbarType) {
+    if (snackbarType == "success") {
+        snackbarStyle = "text-align: center;
+                            background-color: green; color: white;"
+    }
+    if (snackbarType == "warning") {
+        snackbarStyle = "text-align: center;
+                            background-color: orange; color: white;"
+    }
+    if (snackbarType == "danger") {
+        snackbarStyle = "text-align: center;
+                            background-color: red; color: white;"
+    }
+    if (snackbarType == "primary") {
+        snackbarStyle = "text-align: center;
+                            background-color: steelblue; color: white;"
+    }
+    if (snackbarType == "info") {
+            snackbarStyle = "text-align: center;
+                            background-color: black; color: white;"
+    }
+
+    # cat(file = stderr(), "rowsSelected in mySnackbar", input$myDT_rows_selected, "\n")
+    shinyFeedback::snackbar(snackbarID, snackbarMsg, style = snackbarStyle)
+}
+
+
 
 ###########
 
 
-shinyFeedback::snackbar("valueNotChanged",
-                        "Only numbers allowed",
-                        style = "background-color: orange; color: white;")
 
 
 shinyUI <- fluidPage(
 
+    # collection of snackbar messages
+    mySnackbar("resetID", resetMsg, "success"),
+    mySnackbar("updateID", updateMsg, "success"),
+    mySnackbar("addedID", addedRowMsg, "success"),
+    mySnackbar("notAddedID", notAddedRowMsg, "warning"),
+    mySnackbar("deleteID", deleteMsg, "success"),
+    mySnackbar("deleteIDs", deleteSeveralMsg, "success"),
+
     shinyjs::useShinyjs(),
     shinyFeedback::useShinyFeedback(),
-    singleton(
-        tags$head(tags$script(src = "message-handler.js"))
-    ),
 
     fluidRow(
         column(2,
@@ -26,14 +62,6 @@ shinyUI <- fluidPage(
                HTML("<center><h2>Picture Data</h2></center>"),
                HTML("<center><h4>(Control Panel)</h4></center>"),
                hr(),
-               shinyFeedback::snackbar("sucessfullyAdded",
-                        "Value added successfully at the end of the dataset.",
-                        style = "text-align: center;
-                        background-color: green; color: white;"),
-               shinyFeedback::snackbar("notAdded",
-                        "No value added.",
-                        style = "text-align: center;
-                        background-color: orange; color: white;"),
                shinyWidgets::radioGroupButtons(
                             inputId = "plotBtn",
                             choices = c("Histogram",
@@ -66,17 +94,12 @@ shinyUI <- fluidPage(
                shinyjs::disabled(actionButton("reset", "Reset",
                                               class = "btn btn-warning",
                                               width = "100px")),
-               shinyFeedback::snackbar("resetMessage",
-                                        "Data sucessfully reset.",
-                                        style = "text-align: center;
-                                       background-color: green; color: white;"),
                hr(),
                checkboxInput("ragValue",
                              label = strong(showObs), value = FALSE),
 
                #### conditional UI: Histogram sliders
                uiOutput("plotUISliders")
-
            ),
         ),
         column(2,
