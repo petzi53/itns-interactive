@@ -24,7 +24,7 @@ myDotPlot <-  function(thePlot, dotPlotTitle, distance = 0.05) {
     # distance (x-axis from graphical object),
         # distance only used as experimental constant to change manually
 
-    if (input$ragValue) {rugs = rugPlot} else {rugs = NULL}
+    if (input$rugValue) {rugs = rugPlot} else {rugs = NULL}
     ggplot(data$real,
         aes_string(paste0("`", colnames(data$real)[1], "`"))) +
         ggthemes::theme_clean() +

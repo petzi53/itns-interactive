@@ -9,18 +9,14 @@ library(DT)
 # first time use packages
 library(scales)
 library(ggthemes)
-library(glue)
 library(shinyjs)
 library(shinyFeedback)
 library(shinyWidgets)
-library(shinyBS)
+library(waiter)
 
 
-# library(reactlog)
+library(reactlog)
 # library(gsheet)
 # library(itns)
 
-# options(shiny.reactlog = TRUE)
-
-msgHelpTitle = "How to use exercise 'Picture Data'"
-rowsSelected = NULL
+options(shiny.reactlog = TRUE)

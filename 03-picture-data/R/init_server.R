@@ -11,7 +11,6 @@
 #### dataModal
 #### decialplaces (not used at the moment)
 
-
 #####################     included dataset      ###############
 
 ## dataset converted: so that no extra file load is necessary
@@ -42,7 +41,37 @@ myBorderColor = "black"
 slider1 = 14
 slider2 = 15
 
+
+######### Options for DT & showToast messages   ####################
+
+options(DT.options = list(searching = FALSE))
+
+myToastOptions <- list(
+    positionClass = "toast-bottom-center",
+    progressBar = FALSE,
+    timeOut = 3000,              # How long the toast will display without user interaction
+    closeButton = FALSE,
+    newestOnTop = TRUE,
+    preventDuplicates = FALSE,
+    showDuration = 300,          # time for fadeIn animation
+    hideDuration = 1000,         # time for fadeOut animation
+    extendedTimeOut = 1000,      # How long the toast will display after a user hovers over it
+    showEasing = "linear",       # animation easing to show the toasts: 'linear' or 'swing'
+    hideEasing = "linear",       # animation easing to hide the toasts: 'linear' or 'swing'
+    showMethod = "fadeIn",       # choose show method: fadeIn/fadeOut,
+    hideMethod = "fadeOut"       #                     slideDown/slideUp, and show/hide
+)
+
 ######## A collection of server side text strings ##############
+
+msgHelpTitle = "How to use 'Picture Data'"
+
+resetMsg = "Data sucessfully reset to the original dataset."
+updateMsg = "Dataset with your changes successfully updated."
+addedRowMsg = "Value added successfully at the end of the dataset."
+notAddedRowMsg = "Input not valid. Only numbers allowed."
+deleteMsg = "Selected row sucessfully deleted."
+deleteSeveralMsg = "rows sucessfully deleted."
 
 
 msgHelpTitle = "How to use 'Picture Data'"

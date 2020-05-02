@@ -17,6 +17,7 @@ renderUIHistogram <- function() {
             plotOutput("distPlot1", height = 350),
             br(), br(),
             plotOutput("distPlot2", height = 350),
+
         ) # tagList
     }) # output histogram
 }
@@ -24,7 +25,7 @@ renderUIHistogram <- function() {
 
 plotHist <- function(binsNr, binBorders, histoTitle) {
 
-    if (input$ragValue) {rugs = rugPlot
+    if (input$rugValue) {rugs = rugPlot
     } else {rugs = NULL}
         ggplot(data$real, aes_string(paste0("`", colnames(data$real)[1], "`"))) +
         geom_histogram(bins = binsNr, fill = myFillColor, color = myBorderColor) +

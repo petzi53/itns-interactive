@@ -57,6 +57,7 @@ shinyServer(function(input, output, session) {
     })
 
 
+
 ##########################   Observer (mostly Buttons)    ###########################
 
     checkValue <- function(info) {
@@ -69,6 +70,7 @@ shinyServer(function(input, output, session) {
             data$virtual[i,j][[1]] <- newValue
             shinyjs::enable(id = "update")
             shinyjs::enable(id = "reset")
+            show("updateString")
         }
         shinyjs::disable(id = "delete")
         data$virtual
@@ -108,10 +110,15 @@ shinyServer(function(input, output, session) {
         shinyjs::enable(id = "reset")
         shinyjs::enable(id = "update")
         shinyjs::disable(id = "delete")
-        if (length(input$myDT_rows_selected) > 1) {
-            shinyFeedback::showSnackbar("deleteIDs")
+        show("updateString")
+        l <- isolate(length(input$myDT_rows_selected))
+        if (l > 1) {
+            shinyFeedback::showToast("success",
+                 paste(l, deleteSeveralMsg),
+                 .options = myToastOptions)
         } else {
-            shinyFeedback::showSnackbar("deleteID")
+            shinyFeedback::showToast("success", deleteMsg,
+                 .options = myToastOptions)
         }
         })
 
@@ -125,7 +132,9 @@ shinyServer(function(input, output, session) {
             data$real <- as_tibble(dataOriginal)
             shinyjs::disable(id = "reset")
             shinyjs::disable(id = "update")
-            shinyFeedback::showSnackbar("resetID")
+            hide("updateString")
+            shinyFeedback::showToast("success", resetMsg,
+              .options = myToastOptions)
         }
     })
 
@@ -144,7 +153,9 @@ shinyServer(function(input, output, session) {
         data$real <- as_tibble(data$virtual[2])
         data$virtual <- as_tibble(rowid_to_column(data$real))
         shinyjs::disable(id = "update")
-        shinyFeedback::showSnackbar("updateID")
+        hide("updateString")
+        shinyFeedback::showToast("success", updateMsg,,
+                                 .options = myToastOptions)
     })
 
     observeEvent(input$add, {
@@ -159,9 +170,12 @@ shinyServer(function(input, output, session) {
                                     input$newValue))
             shinyjs::enable(id = "reset")
             shinyjs::enable(id = "update")
-            shinyFeedback::showSnackbar("addedID")
+            show("updateString")
+            shinyFeedback::showToast("success", addedRowMsg,
+                                     .options = myToastOptions)
         } else {
-            shinyFeedback::showSnackbar("notAddedID")
+            shinyFeedback::showToast("warning", notAddedRowMsg,
+                                     .options = myToastOptions)
         }
         removeModal()
     })

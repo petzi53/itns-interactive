@@ -1,0 +1,12 @@
+name: picture-data
+title: picture-data
+username:
+account: pbaumgartner
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2208554
+bundleId: 3080808
+url: https://pbaumgartner.shinyapps.io/picture-data/
+when: 1588156501.8557
+asMultiple: FALSE
+asStatic: FALSE
