@@ -14,6 +14,9 @@ shinyServer(function(input, output, session) {
     ### Generate dotplots ----
     source("R/dotplots.R", local = TRUE)
 
+    ### Generate stats lines ----
+    source("R/plot_stats.R", local = TRUE)
+
 
 ############    prepare data & display data    ################
 
@@ -58,6 +61,7 @@ shinyServer(function(input, output, session) {
 
 
 
+
 ##########################   Observer (mostly Buttons)    ###########################
 
     checkValue <- function(info) {
@@ -70,7 +74,7 @@ shinyServer(function(input, output, session) {
             data$virtual[i,j][[1]] <- newValue
             shinyjs::enable(id = "update")
             shinyjs::enable(id = "reset")
-            show("updateString")
+            showElement("updateString")
         }
         shinyjs::disable(id = "delete")
         data$virtual
@@ -110,7 +114,7 @@ shinyServer(function(input, output, session) {
         shinyjs::enable(id = "reset")
         shinyjs::enable(id = "update")
         shinyjs::disable(id = "delete")
-        show("updateString")
+        showElement("updateString")
         l <- isolate(length(input$myDT_rows_selected))
         if (l > 1) {
             shinyFeedback::showToast("success",
@@ -132,7 +136,7 @@ shinyServer(function(input, output, session) {
             data$real <- as_tibble(dataOriginal)
             shinyjs::disable(id = "reset")
             shinyjs::disable(id = "update")
-            hide("updateString")
+            hideElement("updateString")
             shinyFeedback::showToast("success", resetMsg,
               .options = myToastOptions)
         }
@@ -153,7 +157,7 @@ shinyServer(function(input, output, session) {
         data$real <- as_tibble(data$virtual[2])
         data$virtual <- as_tibble(rowid_to_column(data$real))
         shinyjs::disable(id = "update")
-        hide("updateString")
+        hideElement("updateString")
         shinyFeedback::showToast("success", updateMsg,,
                                  .options = myToastOptions)
     })
@@ -170,7 +174,7 @@ shinyServer(function(input, output, session) {
                                     input$newValue))
             shinyjs::enable(id = "reset")
             shinyjs::enable(id = "update")
-            show("updateString")
+            showElement("updateString")
             shinyFeedback::showToast("success", addedRowMsg,
                                      .options = myToastOptions)
         } else {
@@ -189,6 +193,5 @@ shinyServer(function(input, output, session) {
             width = 1000
         )
     })
-
 
 }) # shinyServer

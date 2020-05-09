@@ -13,6 +13,7 @@ library(shinyjs)
 library(shinyFeedback)
 library(shinyWidgets)
 library(waiter)
+library(modeest)
 
 
 library(reactlog)

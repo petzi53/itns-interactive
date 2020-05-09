@@ -1,9 +1,8 @@
 # itns-03 PICTURE DATA 2020-04-28
 
 #### Textstrings for messages and UI text elements
-
-
-showObs = "Individual observations"
+showObs = "Individual observations (1-d plot)"
+showUpdateMsg = "To see your changes click 'Update'."
 
 
 shinyUI <- fluidPage(
@@ -50,13 +49,28 @@ shinyUI <- fluidPage(
                shinyjs::disabled(actionButton("reset", "Reset",
                                               class = "btn btn-warning",
                                               width = "100px")),
-               hidden(p(style = "color: red", id = "updateString",
-                        "To see your changes click 'Update'.")
+               shinyjs::hidden(p(style = "color: red", id = "updateString",
+                        showUpdateMsg)
                       ), # end hidden
                ), # end of center div
                hr(),
-               checkboxInput("rugValue",
-                             label = strong(showObs), value = FALSE),
+               shinyWidgets::awesomeCheckbox(
+                   inputId = "rugValue",
+                   label = strong(showObs),
+                   value = FALSE,
+                   status = "primary",
+                   width = NULL
+               ),
+               shinyWidgets::awesomeCheckboxGroup(
+                   inputId = "location", label = "Measures of Location",
+                   choices = c("Mean", "Median", "Mode"),
+                   inline = TRUE
+               ),
+               shinyWidgets::awesomeCheckboxGroup(
+                   inputId = "spread", label = "Measures of Spread",
+                   choices = c("Z Scores", "Quartiles", "Percentiles"),
+                   inline = TRUE
+               ),
 
                #### conditional UI: Histogram sliders
                uiOutput("plotUISliders")

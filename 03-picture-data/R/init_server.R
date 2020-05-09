@@ -88,7 +88,9 @@ msgHelpText =
         <li><strong>Reset: </strong>Click 'Reset' to return to the original dataset. All your changes will be lost.</li>
         </ul><hr>
         <h3>Some ideas for experiments</h3>
-        <ol><li><strong>Both plot types: </strong>Change, add, delete data and see what happens.</li>
+        <ol><li><strong>Both plot types: </strong>
+        <ul><li>Change, add, delete data and see what happens.</li>
+        <li>Experiment with the different location and spread measures.</li></ul>
         <li><strong>Dot plot: </strong>
             <ul><li>Add several similar values. Which representation is better readable?</li>
             <li>Add an an extreme data point which is relatively far from other data (outlier) . What happens with the size of the individual data points. Why?</li>

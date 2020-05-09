@@ -24,7 +24,21 @@ myDotPlot <-  function(thePlot, dotPlotTitle, distance = 0.05) {
     # distance (x-axis from graphical object),
         # distance only used as experimental constant to change manually
 
-    if (input$rugValue) {rugs = rugPlot} else {rugs = NULL}
+    if (input$rugValue) {rugs = rugPlot
+    } else {rugs = NULL}
+    if (input$locationMean) {myMean = meanPlot(data$real[[1]])
+    } else {myMean = NULL}
+    if (input$locationMedian) {myMedian = medianPlot(data$real[[1]])
+    } else {myMedian = NULL}
+    if (input$locationMode) {myMode = modePlot(data$real[[1]])
+    } else {myMode = NULL}
+    if (input$`spreadZ Scores`) {myZScores = zScoresPlot(data$real[[1]])
+    } else {myZScores = NULL}
+    if (input$spreadQuartiles) {myQuartiles = quartilesPlot(data$real[[1]])
+    } else {myQuartiles = NULL}
+    if (input$spreadPercentiles) {myPercentiles = percentilesPlot(data$real[[1]])
+    } else {myPercentiles = NULL}
+
     ggplot(data$real,
         aes_string(paste0("`", colnames(data$real)[1], "`"))) +
         ggthemes::theme_clean() +
@@ -36,7 +50,7 @@ myDotPlot <-  function(thePlot, dotPlotTitle, distance = 0.05) {
            expand = expansion(add = distance),
                     NULL, breaks = NULL) +
         thePlot() +
-        rugs
+        rugs + myMean + myMedian + myMode + myZScores + myQuartiles + myPercentiles
 }
 
 

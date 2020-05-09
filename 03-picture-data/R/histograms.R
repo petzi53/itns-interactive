@@ -27,18 +27,32 @@ plotHist <- function(binsNr, binBorders, histoTitle) {
 
     if (input$rugValue) {rugs = rugPlot
     } else {rugs = NULL}
-        ggplot(data$real, aes_string(paste0("`", colnames(data$real)[1], "`"))) +
-        geom_histogram(bins = binsNr, fill = myFillColor, color = myBorderColor) +
-        ggthemes::theme_clean() +
-        scale_y_continuous(expand = expansion(mult = 0.1),
-                           breaks = scales::breaks_extended(8)) +
-        scale_x_continuous(
-            n.breaks = 20,
-            sec.axis = sec_axis(trans = ~., breaks = binBorders,
-                    guide_axis(title = "Bin Boundaries"))) +
-        ggtitle(histoTitle) +
-        labs(x = paste0("X (", colnames(data$real)[1], ")"), y = "Frequency") +
-        rugs
+    if (input$locationMean) {myMean = meanPlot(data$real[[1]])
+    } else {myMean = NULL}
+    if (input$locationMedian) {myMedian = medianPlot(data$real[[1]])
+    } else {myMedian = NULL}
+    if (input$locationMode) {myMode = modePlot(data$real[[1]])
+    } else {myMode = NULL}
+    if (input$`spreadZ Scores`) {myZScores = zScoresPlot(data$real[[1]])
+    } else {myZScores = NULL}
+    if (input$spreadQuartiles) {myQuartiles = quartilesPlot(data$real[[1]])
+    } else {myQuartiles = NULL}
+    if (input$spreadPercentiles) {myPercentiles = percentilesPlot(data$real[[1]])
+    } else {myPercentiles = NULL}
+
+
+    ggplot(data$real, aes_string(paste0("`", colnames(data$real)[1], "`"))) +
+    geom_histogram(bins = binsNr, fill = myFillColor, color = myBorderColor) +
+    ggthemes::theme_clean() +
+    scale_y_continuous(expand = expansion(mult = 0.1),
+                       breaks = scales::breaks_extended(8)) +
+    scale_x_continuous(
+        n.breaks = 20,
+        sec.axis = sec_axis(trans = ~., breaks = binBorders,
+                guide_axis(title = "Bin Boundaries"))) +
+    ggtitle(histoTitle) +
+    labs(x = paste0("X (", colnames(data$real)[1], ")"), y = "Frequency") +
+    rugs + myMean + myMedian + myMode + myZScores + myQuartiles + myPercentiles
 }
 
 
