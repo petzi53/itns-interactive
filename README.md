@@ -5,7 +5,7 @@
 
 This repo works in conncection with the book interactive exercises for [itns-exercises](https://bookdown.org/pbaumgartner/itns-exercises/), an interactive companion book for [Introduction to the New Statistics](https://www.routledgetextbooks.com/textbooks/9781138825529/) (abbreviated <i>itns</i>). 
 
-`itns-exercises` is the central part of the book containing all H5P-exercises and the R solutions for the end-of-chapter exercises. `itns-interactive` supplements the main book with exercises written in `learnr` and `shiny`. Whereas the content of the main book is published at the [bookdown server](https://bookdown.org/) are the interactive demonstrations of this repository published of the [shinyapps server](https://www.shinyapps.io/).
+`itns-exercises` is the central part of the book containing all H5P-exercises and the R solutions for the end-of-chapter exercises. `itns-interactive` supplements the main book with exercises written in [learnr](https://rstudio.github.io/learnr/) and [Shiny](https://shiny.rstudio.com/). Whereas the content of the main book is published at the [bookdown server](https://bookdown.org/) are the interactive demonstrations of this repository published of the [shinyapps server](https://www.shinyapps.io/).
 
 At the moment (July 2020) the following shinyapps are available:
 
