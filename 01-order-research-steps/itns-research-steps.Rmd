@@ -1,5 +1,5 @@
 ---
-title: "Order Steps"
+title: "Order Steps of the Research Process"
 output: 
     learnr::tutorial:
         allow_skip: true
@@ -34,7 +34,7 @@ rs <- c(
 
 # Initialize the question
 question_rank(
-  "**Order the steps of the research process.**",
+  "**Drag and drop the sentences in the right order of steps for the research process.**",
   answer(rs, correct = TRUE),
 
   # answer(rev(rs), correct = FALSE, message = "Other direction!"),
